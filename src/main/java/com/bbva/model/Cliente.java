@@ -30,8 +30,8 @@ public class Cliente {
 	private String nombre;
 	@Column(name = "apellido")
 	private String apellido;
-	@Column(name = "sexo")
-	private String sexo;
+	@Column(name = "genero")
+	private String genero;
 	@Column(name = "fecha_nacimiento")
 	private Date fecha_nacimiento;
 	@Column(name = "direccion")
@@ -87,12 +87,12 @@ public class Cliente {
 		this.apellido = apellido;
 	}
 
-	public String getSexo() {
-		return sexo;
+	public String getGenero() {
+		return genero;
 	}
 
-	public void setSexo(String sexo) {
-		this.sexo = sexo;
+	public void setGenero(String genero) {
+		this.genero = genero;
 	}
 
 	public Date getFecha_nacimiento() {

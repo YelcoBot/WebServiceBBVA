@@ -39,13 +39,14 @@ public class ClienteController {
 
 	@PostMapping("/clientes")
 	public Cliente addCliente(@RequestBody Cliente clnt) {
+		validarDatosCliente(clnt);
 
 		Cliente clntFilter = new Cliente();
 		clntFilter.setTipo_documento(clnt.getTipo_documento());
-		clntFilter.setNumero_documento(clnt.getNumero_documento());		
+		clntFilter.setNumero_documento(clnt.getNumero_documento());
 		Cliente clntExists = clienteDAO.findOne(Example.of(clntFilter)).orElse(null);
-		
-		if (clntExists!= null) {
+
+		if (clntExists != null) {
 			throw new RuntimeException("Ya existe un cliente con el mismo tipo y numero de documento : "
 					+ clntExists.getTipo_documento().getCodigo() + " " + clntExists.getNumero_documento());
 		}
@@ -57,6 +58,8 @@ public class ClienteController {
 
 	@PutMapping("/clientes")
 	public Cliente updateCliente(@RequestBody Cliente clnt) {
+		validarDatosCliente(clnt);
+
 		Cliente clntExists = clienteDAO.findById(clnt.getId()).orElse(null);
 		if (clntExists == null) {
 			throw new RuntimeException("Cliente Id no encontrado -" + clnt.getId());
@@ -66,7 +69,7 @@ public class ClienteController {
 		clntExists.setNumero_documento(clnt.getNumero_documento());
 		clntExists.setNombre(clnt.getNombre());
 		clntExists.setApellido(clnt.getApellido());
-		clntExists.setSexo(clnt.getSexo());
+		clntExists.setGenero(clnt.getGenero());
 		clntExists.setFecha_nacimiento(clnt.getFecha_nacimiento());
 		clntExists.setDireccion(clnt.getDireccion());
 		clntExists.setTelefono(clnt.getTelefono());
@@ -84,5 +87,37 @@ public class ClienteController {
 		}
 		clienteDAO.deleteById(id);
 		return "Cliente Id eliminado - " + id;
+	}
+
+	private void validarDatosCliente(Cliente clnt) {
+		boolean valido = true;
+		String result = "";
+
+		if (clnt.getTipo_documento() == null) {
+			result += " Tipo de Documento,";
+			valido = false;
+		}
+		if (clnt.getNumero_documento() == null || clnt.getNumero_documento().trim().isEmpty()) {
+			result += " Número de Documento,";
+			valido = false;
+		}
+		if (clnt.getNombre() == null || clnt.getNombre().trim().isEmpty()) {
+			result += " Nombre,";
+			valido = false;
+		}
+		if (clnt.getApellido() == null || clnt.getApellido().trim().isEmpty()) {
+			result += " Apellido,";
+			valido = false;
+		}
+		if (clnt.getGenero() != null && !clnt.getGenero().trim().isEmpty()
+				&& !(clnt.getGenero().equalsIgnoreCase("M") || clnt.getGenero().equalsIgnoreCase("F"))) {
+			result += " Genero,";
+			valido = false;
+		}
+		if (!valido) {
+			result = result.substring(0, result.length() - 1) + ".";
+			throw new RuntimeException("Valide o ingrese los siguientes datos :" + result);
+		}
+
 	}
 }
